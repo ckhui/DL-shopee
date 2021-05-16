@@ -12,6 +12,8 @@ Determine if two products are the same by their images
 - code 
   - [Kaggle 37th](https://www.kaggle.com/takusid/37th-place-solution-version-76)
   - [Kaggle 2nd](https://www.kaggle.com/lyakaap/2nd-place-solution)
+  - [Kaggle 5th](https://www.kaggle.com/aerdem4/shopee-v03)
+
 - lib
   - [timm - vision model](https://github.com/rwightman/pytorch-image-models)
   - [albumentations - image augmentation](https://github.com/albumentations-team/albumentations)
