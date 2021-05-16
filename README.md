@@ -1,6 +1,10 @@
 # THU-ACP DeepLearning 2021 Project
 
 # Kaggle Competition 
+## Shopee - Price Match Guarantee
+
+Determine if two products are the same by their images
+
 [Kaggle Link](https://www.kaggle.com/c/shopee-product-matching)
 
 
