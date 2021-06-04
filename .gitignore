@@ -512,3 +512,6 @@ ENV/
 # other
 .vscode
 data/
+
+# training
+/weights

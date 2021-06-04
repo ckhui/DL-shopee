@@ -9,6 +9,7 @@ from model.recognition.ShopeeCurricularFaceModel import ShopeeCurricularFaceMode
 from torch_utils.Optimizer import Ranger
 from torch_utils.Scheduler import ShopeeScheduler
 from torch_utils.Runner import train_fn
+import torch
 
 ## Setup 
 csv_train = "../../shopee-product-matching/train.csv"
@@ -41,6 +42,8 @@ optimizer = Ranger(model.parameters(), lr = CFG.SCHEDULER_PARAMS['lr_start'])
 scheduler = ShopeeScheduler(optimizer,**CFG.SCHEDULER_PARAMS)
 
 print("START Training ... ")
+torch.save(model.state_dict(),'./weights/nfnet_cuFace_model_0.pt')
 for i in range(CFG.EPOCHS):
     avg_loss_train = train_fn(model, trainloader, optimizer, scheduler, i)
-    #torch.save(model.state_dict(),'c_face_eca_nfnet_l0.pt')
+    if i%10 == 0:
+        torch.save(model.state_dict(),f'./weights/nfnet_cuFace_model_{i}.pt')

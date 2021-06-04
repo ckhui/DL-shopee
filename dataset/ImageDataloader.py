@@ -58,7 +58,7 @@ def BuildImageDataloader(df, image_folder, transform=SHOPEE_TRANSFORM, batch_siz
     trainloader = torch.utils.data.DataLoader(
         dataset,
         batch_size = batch_size,
-        pin_memory = True,
+        pin_memory = if device == 'cpu',
         num_workers = num_workers,
         shuffle = True,
         drop_last = True
