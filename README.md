@@ -6,7 +6,22 @@
 Determine if two products are the same by their images
 
 [Kaggle Link](https://www.kaggle.com/c/shopee-product-matching)
+
+# Module
+- Training
+  - [x] CurricularFace Training
+- Inference
+  - [x] tdidf 
+  - [ ] image feature
+
+# Result
+
+| Model  | Threshold     |Public  |Private |CV     |
+| ------ |:-------------:| ------:|-------:|:-----:|
+| TFIDF  | 0.6 | 0.562 | 0.574 | 0.60192 |
+| TFIDF  | 0.8 | 0.523 | 0.531 | 0.63497 |
 # References
+
 - code 
   - [ ] [Kaggle 37th](https://www.kaggle.com/takusid/37th-place-solution-version-76)
   - [ ] [Kaggle 2nd](https://www.kaggle.com/lyakaap/2nd-place-solution)
@@ -16,3 +31,4 @@ Determine if two products are the same by their images
 - lib
   - [timm - vision model](https://github.com/rwightman/pytorch-image-models)
   - [albumentations - image augmentation](https://github.com/albumentations-team/albumentations)
+
