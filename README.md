@@ -19,4 +19,4 @@ Determine if two products are the same by their images
 
 - lib
   - [timm - vision model](https://github.com/rwightman/pytorch-image-models)
-  - [albumentations - image augmentation](https://github.com/albumentations-team/albumentations)
+  - [albumentations - image augmentation](https://github.com/albumentations-team/albumentations) 
