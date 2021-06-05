@@ -6,7 +6,7 @@
 Determine if two products are the same by their images
 
 [Kaggle Link](https://www.kaggle.com/c/shopee-product-matching)
-
+ 
 # Module
 - Training
   - [x] CurricularFace Training
@@ -16,10 +16,11 @@ Determine if two products are the same by their images
 
 # Result
 
-| Model  | Threshold     |Public  |Private |CV     |
-| ------ |:-------------:| ------:|-------:|:-----:|
-| TFIDF  | 0.6 | 0.562 | 0.574 | 0.60192 |
-| TFIDF  | 0.8 | 0.523 | 0.531 | 0.63497 |
+| Model              | KNN Threshold |Private |Public  |CV       |
+| ------------------ |:-------------:| ------:|-------:|:-------:|
+| TFIDF              | 0.6           | 0.562  | 0.574  | 0.60192 |
+| TFIDF              | 0.8           | 0.523  | 0.531  | 0.63497 |
+| NFnet+CuFace - E0  | 3.0           | 0.627  | 0.638  | 0.64980 |
 # References
 
 - code 
