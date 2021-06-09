@@ -38,30 +38,33 @@ class ShopeeDataset(Dataset):
         return self.df.shape[0]
 
 
-IMG_SIZE = 512
-MEAN = [0.485, 0.456, 0.406]
-STD = [0.229, 0.224, 0.225]
+class ImageDataLoader:
+    def __init__(self, IMG_SIZE=512, MEAN=None, STD=None):
+        MEAN = [0.485, 0.456, 0.406]
+        STD = [0.229, 0.224, 0.225]
 
-SHOPEE_TRANSFORM = albumentations.Compose([
-                albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
-                albumentations.HorizontalFlip(p=0.5),
-                albumentations.VerticalFlip(p=0.5),
-                albumentations.Rotate(limit=120, p=0.8),
-                albumentations.RandomBrightness(limit=(0.09, 0.6), p=0.5),
-                albumentations.Normalize(mean = MEAN, std = STD),
-                ToTensorV2(p=1.0),  ## outshape [w,h,3] -> [3,w,h]
-            ])
-    
-def BuildImageDataloader(df, image_folder, transform=SHOPEE_TRANSFORM, batch_size=32, num_workers=4, device='cpu'):
-    dataset = ShopeeDataset(df, image_folder, transform=transform, device=device)
+        self.SHOPEE_TRANSFORM = albumentations.Compose([
+                        albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
+                        albumentations.HorizontalFlip(p=0.5),
+                        albumentations.VerticalFlip(p=0.5),
+                        albumentations.Rotate(limit=120, p=0.8),
+                        albumentations.RandomBrightness(limit=(0.09, 0.6), p=0.5),
+                        albumentations.Normalize(mean = MEAN, std = STD),
+                        ToTensorV2(p=1.0),  ## outshape [w,h,3] -> [3,w,h]
+                    ])
+        
+    def BuildImageDataloader(self, df, image_folder, transform=None, batch_size=32, num_workers=4, device='cpu'):
+        if not transform:
+            transform=self.SHOPEE_TRANSFORM
+        dataset = ShopeeDataset(df, image_folder, transform=transform, device=device)
 
-    trainloader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size = batch_size,
-        pin_memory = device == 'cpu',
-        num_workers = num_workers,
-        shuffle = True,
-        drop_last = True
-    )
+        trainloader = torch.utils.data.DataLoader(
+            dataset,
+            batch_size = batch_size,
+            pin_memory = device == 'cpu',
+            num_workers = num_workers,
+            shuffle = True,
+            drop_last = True
+        )
 
-    return trainloader
+        return trainloader

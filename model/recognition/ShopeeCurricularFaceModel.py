@@ -20,6 +20,11 @@ def createTimmBackbone(model_name, pretrained=True):
         model.head.fc = nn.Identity()
         model.head.global_pool = nn.Identity()
 
+    elif 'swin' in model_name:
+        final_in_features = model.head.in_features
+        model.head = nn.Identity()
+        model.global_pool = nn.Identity()
+
     return model, final_in_features
 
 
@@ -38,6 +43,7 @@ class ShopeeCurricularFaceModel(nn.Module):
 
         super(ShopeeCurricularFaceModel,self).__init__()
         
+        self.model_name = model_name
         self.backbone, final_in_features = createTimmBackbone(model_name, pretrained)
         self.pooling =  nn.AdaptiveAvgPool2d(1)
 
@@ -69,7 +75,9 @@ class ShopeeCurricularFaceModel(nn.Module):
     def extract_feat(self, x):
         batch_size = x.shape[0]
         x = self.backbone(x)
-        x = self.pooling(x).view(batch_size, -1)
+        if "efficientnet" in self.model_name:
+            x = self.pooling(x)
+        x = x.view(batch_size, -1)
 
         if self.use_fc:
             x = self.dropout(x)
