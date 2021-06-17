@@ -12,8 +12,8 @@ Determine if two products are the same by their images
   - [x] CurricularFace Training
 - Inference
   - [x] tdidf 
-  - [ ] image feature
-
+  - [x] image feature
+  - [ ] Blending - Recall and Union
 # Result
 
 | Model              | KNN Threshold |Private |Public  |CV       |
