@@ -17,8 +17,11 @@ def extract_image_feature(config, weight_path, dataloader):
         scale = config.SCALE,
         pretrained = False)
     model.eval()
-    model.load_state_dict(torch.load(weight_path),strict=False)
     model = model.to(config.DEVICE)
+    model.load_state_dict(
+        torch.load(weight_path, map_location=torch.device(config.DEVICE)),
+        strict=False
+    )
 
     ## to image embeding
     dataset_embeds = []

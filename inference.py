@@ -24,7 +24,6 @@ if __name__ == "__main__":
 
     CFG = DEFAULT_CFG
     CFG.BATCH_SIZE = 4
-    CFG.DEVICE = 'cpu'
     CFG.NUM_WORKERS = 0
 
 

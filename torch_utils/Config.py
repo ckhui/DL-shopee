@@ -1,3 +1,4 @@
+import torch
 class DEFAULT_CFG:
     
     ## Training
@@ -6,7 +7,7 @@ class DEFAULT_CFG:
     ## Dataloader
     BATCH_SIZE = 8
     NUM_WORKERS = 4
-    DEVICE = 'cuda'
+    DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     ## For CurricularFace
     SCALE = 30

@@ -7,6 +7,9 @@ from albumentations.pytorch.transforms import ToTensorV2
 import cv2
 import pandas as pd
 
+IMG_SIZE = 512
+MEAN = [0.485, 0.456, 0.406]
+STD = [0.229, 0.224, 0.225]
 
 class ShopeeDataset(Dataset):
     
@@ -40,12 +43,9 @@ class ShopeeDataset(Dataset):
 
 
 class ImageDataLoader:
-    def __init__(self, IMG_SIZE=512, MEAN=None, STD=None):
-        MEAN = [0.485, 0.456, 0.406]
-        STD = [0.229, 0.224, 0.225]
-
+    def __init__(self, img_szie=512):
         self.SHOPEE_TRANSFORM = albumentations.Compose([
-                        albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
+                        albumentations.Resize(img_szie,img_szie,always_apply=True),
                         albumentations.HorizontalFlip(p=0.5),
                         albumentations.VerticalFlip(p=0.5),
                         albumentations.Rotate(limit=120, p=0.8),
@@ -59,22 +59,22 @@ class ImageDataLoader:
             transform=self.SHOPEE_TRANSFORM
         dataset = ShopeeDataset(df, image_folder, transform=transform, device=device)
 
-    trainloader = DataLoader(
-        dataset,
-        batch_size = batch_size,
-        pin_memory = device == 'cpu',
-        num_workers = num_workers,
-        shuffle = True,
-        drop_last = True
-    )
+        trainloader = DataLoader(
+            dataset,
+            batch_size = batch_size,
+            pin_memory = device == 'cpu',
+            num_workers = num_workers,
+            shuffle = True,
+            drop_last = True
+        )
 
-    return trainloader
+        return trainloader
 
 SHOPEE_TRANSFORM_INFER = albumentations.Compose([
-            albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
-            albumentations.Normalize(mean = MEAN, std = STD),
-            ToTensorV2(p=1.0)
-        ])
+    albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
+    albumentations.Normalize(mean = MEAN, std = STD),
+    ToTensorV2(p=1.0)
+])
 
 def infer_transform_with_size(img_size):
     return albumentations.Compose([
