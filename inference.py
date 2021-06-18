@@ -8,6 +8,7 @@ from torch_utils.Config import DEFAULT_CFG
 from model.recognition.ShopeeCurricularFaceModel import ShopeeCurricularFaceModel
 
 from model.matching.knn import KNN_predict
+from feature_extractor import extract_image_feature, extract_tfidf_feature
 import torch
 
 if __name__ == "__main__":
@@ -29,37 +30,18 @@ if __name__ == "__main__":
 
     df, dataloader = BuildInferDataloader(csv_train, image_folder, batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
 
-
-    ## load model and weight
-    IMG_MODEL_PATH = "./weights/init_weight_curriuclarFace.pt"
-    model = ShopeeCurricularFaceModel(
-        n_classes = CFG.CLASSES,
-        model_name = CFG.MODEL_NAME,
-        fc_dim = CFG.FC_DIM,
-        margin = CFG.MARGIN,
-        scale = CFG.SCALE,
-        pretrained = False)
-    model.eval()
-    model.load_state_dict(torch.load(IMG_MODEL_PATH),strict=False)
-    model = model.to(CFG.DEVICE)
-
-    ## to image embeding
-    dataset_embeds = []
-    with torch.no_grad():
-        for img,label in tqdm(dataloader): 
-            img = img.to(CFG.DEVICE)
-            label = label.to(CFG.DEVICE)
-            feat = model.extract_feat(img)
-            image_embeddings = feat.detach().cpu().numpy()
-            dataset_embeds.append(image_embeddings)
-    dataset_embeds = np.concatenate(dataset_embeds)
-    print(f'Our image embeddings shape is {dataset_embeds.shape}')
+    nfnet_weight = "./weights/init_weight_curriuclarFace.pt"
+    nfnet_config = CFG()
+    nfnet_config.MODEL_NAME = "eca_nfnet_l0"
+    image_embeds = extract_image_feature(nfnet_config, nfnet_weight, dataloader)
+    
+    tfidf_embeds = extract_tfidf_feature(df)
 
 
     KNN = min(len(df), 50)
     thresh = 15 #21.0
     df_text, group_predictions, scores_df = KNN_predict(
-        df, dataset_embeds, KNN=KNN, 
+        df, image_embeds, KNN=KNN, 
         thresh_range=list(np.arange(15,25,1))
     )
     # df_text, image_predictions, scores_df = KNN_predict(
