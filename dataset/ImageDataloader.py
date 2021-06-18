@@ -74,6 +74,13 @@ SHOPEE_TRANSFORM_INFER = albumentations.Compose([
             ToTensorV2(p=1.0)
         ])
 
+def infer_transform_with_size(img_size):
+    return albumentations.Compose([
+            albumentations.Resize(img_size,img_size,always_apply=True),
+            albumentations.Normalize(mean = MEAN, std = STD),
+            ToTensorV2(p=1.0)
+        ])
+
 class ShopeeInferenceDataset(Dataset):
     def __init__(self, image_paths, transforms=SHOPEE_TRANSFORM_INFER):
 
@@ -105,10 +112,12 @@ def read_matching_dataset(csv, img_folder):
     image_paths = img_folder + df['image']
     return df, image_paths
 
-def BuildInferDataloader(csv, img_folder, batch_size=32, num_workers=4, device='cpu'):
+def BuildInferDataloader(csv, img_folder, img_size=512, batch_size=32, num_workers=4, device='cpu'):
     df, img_paths = read_matching_dataset(csv, img_folder)
 
-    infer_dataset = ShopeeInferenceDataset(img_paths)
+    transfroms = infer_transform_with_size(img_size)
+
+    infer_dataset = ShopeeInferenceDataset(img_paths, transforms=transfroms)
 
     infer_dataloader = DataLoader(
         infer_dataset,
