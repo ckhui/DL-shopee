@@ -5,7 +5,7 @@ import timm
 
 from torch_utils.Config import DEFAULT_CFG as CFG
 
-def createTimmBackbone(model_name, pretrained=True):
+def createTimmBackbone(model_name, pretrained=True, trainable=False):
     print('Building Model Backbone for {} model'.format(model_name))
     model = timm.create_model(model_name, pretrained=pretrained)
     final_in_features = 0
@@ -19,6 +19,10 @@ def createTimmBackbone(model_name, pretrained=True):
         final_in_features = model.head.fc.in_features
         model.head.fc = nn.Identity()
         model.head.global_pool = nn.Identity()
+
+    if not trainable:
+        for param in model.parameters():
+            param.requires_grad = False
 
     return model, final_in_features
 

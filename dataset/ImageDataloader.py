@@ -5,6 +5,7 @@ from torch.utils.data import Dataset,DataLoader
 import albumentations
 from albumentations.pytorch.transforms import ToTensorV2
 import cv2
+import pandas as pd
 
 
 class ShopeeDataset(Dataset):
@@ -55,7 +56,7 @@ SHOPEE_TRANSFORM = albumentations.Compose([
 def BuildImageDataloader(df, image_folder, transform=SHOPEE_TRANSFORM, batch_size=32, num_workers=4, device='cpu'):
     dataset = ShopeeDataset(df, image_folder, transform=transform, device=device)
 
-    trainloader = torch.utils.data.DataLoader(
+    trainloader = DataLoader(
         dataset,
         batch_size = batch_size,
         pin_memory = device == 'cpu',
@@ -65,3 +66,57 @@ def BuildImageDataloader(df, image_folder, transform=SHOPEE_TRANSFORM, batch_siz
     )
 
     return trainloader
+
+
+SHOPEE_TRANSFORM_INFER = albumentations.Compose([
+            albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
+            albumentations.Normalize(mean = MEAN, std = STD),
+            ToTensorV2(p=1.0)
+        ])
+
+class ShopeeInferenceDataset(Dataset):
+    def __init__(self, image_paths, transforms=SHOPEE_TRANSFORM_INFER):
+
+        self.image_paths = image_paths
+        self.augmentations = transforms
+
+    def __len__(self):
+        return self.image_paths.shape[0]
+
+    def __getitem__(self, index):
+        image_path = self.image_paths[index]
+        
+        image = cv2.imread(image_path)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        if self.augmentations:
+            augmented = self.augmentations(image=image)
+            image = augmented['image']       
+
+        return image,torch.tensor(1)
+
+
+def read_matching_dataset(csv, img_folder):
+    df = pd.read_csv(csv)
+    if 'label_group' in df:
+        tmp = df.groupby(['label_group'])['posting_id'].unique().to_dict()
+        df['matches'] = df['label_group'].map(tmp)
+        df['matches'] = df['matches'].apply(lambda x: ' '.join(x))
+    image_paths = img_folder + df['image']
+    return df, image_paths
+
+def BuildInferDataloader(csv, img_folder, batch_size=32, num_workers=4, device='cpu'):
+    df, img_paths = read_matching_dataset(csv, img_folder)
+
+    infer_dataset = ShopeeInferenceDataset(img_paths)
+
+    infer_dataloader = DataLoader(
+        infer_dataset,
+        batch_size = batch_size,
+        pin_memory = device == 'cpu',
+        num_workers = num_workers,
+        shuffle = False,
+        drop_last = False,
+    )
+
+    return df, infer_dataloader
