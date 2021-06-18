@@ -34,7 +34,8 @@ def KNN_predict(df, embeddings, KNN=50, thresh=None, thresh_range=None):
     text : list(np.arange(0.1, 1, 0.1))   
     '''
     assert ((thresh is None) or (thresh_range is None)), "Must provide either `thresh` or `thresh_range`"
-    assert ((thresh_range is not None) or ('matches' in df.columns)), "Cannot perform threshold selection on testing data"
+    if thresh_range is not None:
+        assert 'matches' in df.columns, "Cannot perform threshold selection on testing data"
 
     model = NearestNeighbors(n_neighbors = KNN)
     model.fit(embeddings)
