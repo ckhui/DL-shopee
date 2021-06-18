@@ -32,17 +32,17 @@ if __name__ == "__main__":
     df, dataloader = BuildInferDataloader(csv, image_folder, batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
     df, dataloader_384 = BuildInferDataloader(csv, image_folder, img_size=384, batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
 
-    nfnet_weight = "./weights/init_weight_curriuclarFace.pt"
-    nfnet_config = CFG()
-    nfnet_config.MODEL_NAME = "eca_nfnet_l0"
-    image_embeds = extract_image_feature(nfnet_config, nfnet_weight, dataloader)
+    # nfnet_weight = "./weights/init_weight_curriuclarFace.pt"
+    # nfnet_config = CFG()
+    # nfnet_config.MODEL_NAME = "eca_nfnet_l0"
+    # image_embeds = extract_image_feature(nfnet_config, nfnet_weight, dataloader)
 
     # swim_weight = "./weights/swin_base_patch4_window12_384_cuFace_model_14.pt"
     # swim_config = CFG()
     # swim_config.MODEL_NAME = "swin_base_patch4_window12_384"
     # image_embeds = extract_image_feature(swim_config, swim_weight, dataloader_384)
     
-    # tfidf_embeds = extract_tfidf_feature(df)
+    tfidf_embeds = extract_tfidf_feature(df)
 
     # model_bert = "cahya/bert-base-indonesian-522M"
     # weight_bert = './weights/bert-indonesian-522m_best_loss_num_epochs_30_arcface.bin'
@@ -53,20 +53,20 @@ if __name__ == "__main__":
     # text_embeds = extract_text_feature(CFG, df, model_sbert, weight_sbert)
 
 
-    data_emb = image_embeds
-    # data_emb = tfidf_embeds
+    # data_emb = image_embeds
+    data_emb = tfidf_embeds
     # data_emb = text_embeds
 
     KNN = min(len(df), 50)
     thresh = 15 #21.0
-    df_text, group_predictions, scores_df = KNN_predict(
-        df, data_emb, KNN=KNN, 
-        thresh_range=list(np.arange(15,25,1))
-    )
-    # df_text, image_predictions, scores_df = KNN_predict(
+    # df_text, group_predictions, scores_df = KNN_predict(
     #     df, data_emb, KNN=KNN, 
-    #     thresh=thresh
+    #     thresh_range=list(np.arange(15,25,1))
     # )
-    df['image_predictions'] = group_predictions
+    df_text, model_predictions, scores_df = KNN_predict(
+        df, data_emb, KNN=KNN, 
+        thresh=thresh
+    )
+    df['image_predictions'] = model_predictions
 
     

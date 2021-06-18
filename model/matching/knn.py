@@ -34,7 +34,7 @@ def KNN_predict(df, embeddings, KNN=50, thresh=None, thresh_range=None):
     text : list(np.arange(0.1, 1, 0.1))   
     '''
     assert ((thresh is None) or (thresh_range is None)), "Must provide either `thresh` or `thresh_range`"
-    assert ((thresh_range is not None) and ('matches' in df.columns)), "Cannot perform threshold selection on testing data"
+    assert ((thresh_range is not None) or ('matches' in df.columns)), "Cannot perform threshold selection on testing data"
 
     model = NearestNeighbors(n_neighbors = KNN)
     model.fit(embeddings)
@@ -72,7 +72,7 @@ def KNN_predict(df, embeddings, KNN=50, thresh=None, thresh_range=None):
         best_score = max_score['scores'].values[0]
         print(f'Our best score is {best_score} and has a threshold {best_threshold}')
     
-    thresh = best_threshold
+        thresh = best_threshold
     # Because we are predicting the test set that have 70K images and different label groups, confidence should be smaller
     predictions = []
     for k in tqdm(range(embeddings.shape[0])):
