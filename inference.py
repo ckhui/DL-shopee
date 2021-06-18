@@ -8,7 +8,7 @@ from torch_utils.Config import DEFAULT_CFG
 from model.recognition.ShopeeCurricularFaceModel import ShopeeCurricularFaceModel
 
 from model.matching.knn import KNN_predict
-from feature_extractor import extract_image_feature, extract_tfidf_feature
+from feature_extractor import extract_image_feature, extract_tfidf_feature, extract_text_feature
 import torch
 
 if __name__ == "__main__":
@@ -35,16 +35,25 @@ if __name__ == "__main__":
     # nfnet_config.MODEL_NAME = "eca_nfnet_l0"
     # image_embeds = extract_image_feature(nfnet_config, nfnet_weight, dataloader)
 
-    swim_weight = "./weights/swin_base_patch4_window12_384_cuFace_model_14.pt"
-    swim_config = CFG()
-    swim_config.MODEL_NAME = "swin_base_patch4_window12_384"
-    image_embeds = extract_image_feature(swim_config, swim_weight, dataloader_384)
+    # swim_weight = "./weights/swin_base_patch4_window12_384_cuFace_model_14.pt"
+    # swim_config = CFG()
+    # swim_config.MODEL_NAME = "swin_base_patch4_window12_384"
+    # image_embeds = extract_image_feature(swim_config, swim_weight, dataloader_384)
     
     # tfidf_embeds = extract_tfidf_feature(df)
 
+    model_bert = "cahya/bert-base-indonesian-522M"
+    weight_bert = './weights/bert-indonesian-522m_best_loss_num_epochs_30_arcface.bin'
+    text_embeds = extract_text_feature(CFG, df, model_bert, weight_bert)
 
-    data_emb = image_embeds
+    # model_sbert = "sentence-transformers/paraphrase-xlm-r-multilingual-v1"
+    # weight_sbert = './weights/paraphrase-xlm-r-multilingual-v130.bin'
+    # text_embeds = extract_text_feature(CFG, df, model_sbert, weight_sbert)
+
+
+    # data_emb = image_embeds
     # data_emb = tfidf_embeds
+    data_emb = text_embeds
 
     KNN = min(len(df), 50)
     thresh = 15 #21.0

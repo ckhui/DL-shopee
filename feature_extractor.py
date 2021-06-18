@@ -4,8 +4,12 @@ import torch
 import gc
 from tqdm import tqdm
 
+import transformers
+
 from model.recognition.ShopeeCurricularFaceModel import ShopeeCurricularFaceModel
 from model.nlp.tfidf import TFIDF_feateure
+from model.nlp.BERT import BERTNet
+from dataset.ImageDataloader import BuildInferDataloader_TEXT
 
 def extract_image_feature(config, weight_path, dataloader):
     ## load model and weight
@@ -42,3 +46,44 @@ def extract_image_feature(config, weight_path, dataloader):
 
 def extract_tfidf_feature(df, min_PCA = 5000):
     return TFIDF_feateure(df, min_PCA)
+
+
+
+def extract_text_feature(config, df, pretrained_path, weight_path):
+
+
+    TOKENIZER = transformers.AutoTokenizer.from_pretrained(pretrained_path)
+    model_params = {
+        'n_classes':config.CLASSES,
+        'model_name':pretrained_path,
+        'use_fc':False,
+        'fc_dim':config.FC_DIM,
+        'dropout':0.3,
+    }
+    model = BERTNet(**model_params)
+    model.eval()
+    model.load_state_dict(
+        dict(list(torch.load(
+            weight_path, map_location=torch.device(config.DEVICE)
+            ).items())[:-1]),
+        strict=False
+        )
+
+    model = model.to(config.DEVICE)
+    text_dataloader = BuildInferDataloader_TEXT(df, TOKENIZER, batch_size=config.BATCH_SIZE, num_workers=config.NUM_WORKERS, device=config.DEVICE)
+
+    embeds = []
+    with torch.no_grad():
+        for input_ids, attention_mask in tqdm(text_dataloader): 
+            input_ids = input_ids.to(config.DEVICE)
+            attention_mask = attention_mask.to(config.DEVICE)
+            feat = model(input_ids, attention_mask)
+            text_embeddings = feat.detach().cpu().numpy()
+            embeds.append(text_embeddings)
+
+    del model
+    text_embeddings = np.concatenate(embeds)
+    print(f'Our text embeddings shape is {text_embeddings.shape}')
+    del embeds
+    gc.collect()
+    return text_embeddings

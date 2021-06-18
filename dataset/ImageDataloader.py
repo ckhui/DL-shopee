@@ -132,3 +132,33 @@ def BuildInferDataloader(csv, img_folder, img_size=512, batch_size=32, num_worke
 
     return df, infer_dataloader
 
+class ShopeeTextTokenDataset(Dataset):
+    def __init__(self, csv, tokenizer):
+        self.csv = csv.reset_index()
+        self.tokenizer = tokenizer
+
+    def __len__(self):
+        return self.csv.shape[0]
+
+    def __getitem__(self, index):
+        row = self.csv.iloc[index]
+        text = row.title
+        text = self.tokenizer(text, padding='max_length', truncation=True, max_length=128, return_tensors="pt")
+        input_ids = text['input_ids'][0]
+        attention_mask = text['attention_mask'][0]  
+        
+        return input_ids, attention_mask
+
+def BuildInferDataloader_TEXT(csv, tokenizer, batch_size=32, num_workers=4, device='cpu'):
+    text_dataset = ShopeeTextTokenDataset(csv, tokenizer)
+
+    text_loader = DataLoader(
+        text_dataset,
+        batch_size=batch_size,
+        pin_memory = device == 'cpu',
+        num_workers = num_workers,
+        shuffle = False,
+        drop_last = False,
+    )
+
+    return text_loader
