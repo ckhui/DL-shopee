@@ -8,6 +8,7 @@ IS_GPU = torch.cuda.is_available()
 if IS_GPU:
     from cuml.feature_extraction.text import TfidfVectorizer
     from cuml import PCA
+    import cudf
 else:
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.decomposition import PCA

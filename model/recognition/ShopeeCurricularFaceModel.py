@@ -14,7 +14,6 @@ def createTimmBackbone(model_name, pretrained=True, trainable=False):
         final_in_features = model.classifier.in_features
         model.classifier = nn.Identity()
         model.global_pool = nn.Identity()
-    
     elif 'nfnet' in model_name:
         final_in_features = model.head.fc.in_features
         model.head.fc = nn.Identity()
@@ -78,7 +77,7 @@ class ShopeeCurricularFaceModel(nn.Module):
     def extract_feat(self, x):
         batch_size = x.shape[0]
         x = self.backbone(x)
-        if "efficientnet" in self.model_name:
+        if "nfnet" in self.model_name:
             x = self.pooling(x)
         x = x.view(batch_size, -1)
 
