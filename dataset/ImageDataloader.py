@@ -43,9 +43,9 @@ class ShopeeDataset(Dataset):
 
 
 class ImageDataLoader:
-    def __init__(self, img_szie=512):
+    def __init__(self, IMG_SIZE=512):
         self.SHOPEE_TRANSFORM = albumentations.Compose([
-                        albumentations.Resize(img_szie,img_szie,always_apply=True),
+                        albumentations.Resize(IMG_SIZE,IMG_SIZE,always_apply=True),
                         albumentations.HorizontalFlip(p=0.5),
                         albumentations.VerticalFlip(p=0.5),
                         albumentations.Rotate(limit=120, p=0.8),

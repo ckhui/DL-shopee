@@ -12,19 +12,20 @@ import torch
 
 
 if __name__ == "__main__":
+    CFG = DEFAULT_CFG()
     ## Setup 
-    dataset_folder = '../../'
+    dataset_folder = 'data'
     # csv_train = f"{folder}/shopee-product-matching/train.csv"
-    csv_train = f"{dataset_folder}/shopee-product-matching/tiny.csv"
-    image_folder = f"{dataset_folder}/shopee-product-matching/train_images/"
+    csv_train = f"{dataset_folder}/train.csv"
+    image_folder = f"{dataset_folder}/train_images/"
     
     ## Read Dataframe
     df = pd.read_csv(csv_train)
     labelencoder= LabelEncoder()
     df['label_group'] = labelencoder.fit_transform(df['label_group'])
 
-    ## Read Dataset
-    trainloader = BuildImageDataloader(df, image_folder,batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
+    # ## Read Dataset
+    # trainloader = BuildImageDataloader(df, image_folder,batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
 
 
 if __name__ == '__main__':
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     trainloader = dataloader.BuildImageDataloader(df, image_folder, batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
 
     CFG = DEFAULT_CFG
-    CFG.BATCH_SIZE = 8
+    CFG.BATCH_SIZE = 2
     CFG.DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
     CFG.NUM_WORKERS = 0
     CFG.CLASSES = df['label_group'].nunique()
