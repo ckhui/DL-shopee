@@ -12,7 +12,6 @@ import torch
 
 
 if __name__ == "__main__":
-    CFG = DEFAULT_CFG()
     ## Setup 
     dataset_folder = 'data'
     # csv_train = f"{folder}/shopee-product-matching/train.csv"
@@ -26,12 +25,7 @@ if __name__ == "__main__":
 
     # ## Read Dataset
     # trainloader = BuildImageDataloader(df, image_folder,batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
-
-
-if __name__ == '__main__':
     ## Read Dataset
-    dataloader = ImageDataLoader(IMG_SIZE=384)
-    trainloader = dataloader.BuildImageDataloader(df, image_folder, batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
 
     CFG = DEFAULT_CFG
     CFG.BATCH_SIZE = 2
@@ -39,6 +33,10 @@ if __name__ == '__main__':
     CFG.NUM_WORKERS = 0
     CFG.CLASSES = df['label_group'].nunique()
     CFG.MODEL_NAME = 'swin_base_patch4_window12_384'
+
+
+    dataloader = ImageDataLoader(IMG_SIZE=384)
+    trainloader = dataloader.BuildImageDataloader(df, image_folder, batch_size=CFG.BATCH_SIZE, num_workers=CFG.NUM_WORKERS, device=CFG.DEVICE)
 
 
     ## Init Model and Training
